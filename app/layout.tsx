@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Apex Studio Ecosystem",
+  title: "CAPACITY CONNECT — MoES • IMD Portal (PS 26075)",
   description: "An elite digital agency and developer ecosystem.",
 };
 

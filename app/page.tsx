@@ -1,149 +1,222 @@
 'use client'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
-import { Terminal, Code2, Users, Briefcase, Zap, Sparkles, ShieldCheck } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { ShieldCheck, ArrowRight, FileText, Award, Bell, BookOpen } from 'lucide-react'
+
+const DEFAULT_BROADCASTS = [
+  {
+    id: 'b1',
+    type: 'ANNOUNCEMENT',
+    badge: 'Official Circular',
+    title: 'Mission Mausam 2026: Mandatory Doppler Weather Radar (DWR) Certification',
+    desc: 'All Regional Meteorological Centre (RMC) officers must complete the Dual-Polarization Radar module and subject-wise MCQ assessment by 15 October 2026.',
+    date: '28 Sep 2026 • IMD HQ, Lodhi Road, New Delhi'
+  },
+  {
+    id: 'b2',
+    type: 'ACHIEVEMENT',
+    badge: 'Departmental Milestone',
+    title: '98.4% Cyclone Track Forecast Verification Score Achieved by RMC Cohort',
+    desc: 'RMC Bhubaneswar and Cyclone Warning Division trainees recorded the highest accuracy in the NWP Ensemble Prediction simulation.',
+    date: '25 Sep 2026 • MoES Performance Review'
+  },
+  {
+    id: 'b3',
+    type: 'NEW_CONTENT',
+    badge: 'New Study Material',
+    title: 'Trainer Library Update: High-Resolution Mesoscale NWP & Fog Nowcasting',
+    desc: 'Dr. R. K. Jenamani uploaded 4 recorded lectures, 2 slide decks, and a 20-question timed MCQ questionnaire.',
+    date: '24 Sep 2026 • Trainer Library'
+  },
+  {
+    id: 'b4',
+    type: 'NOTIFICATION',
+    badge: 'Training Schedule',
+    title: 'WMO BIP-M & AMTC Batch-14 Trainer Competency Assignments Published',
+    desc: 'Subject-wise trainer allocations for Aviation Meteorology, Agrometeorology, and Seismology have been finalized via Competency Mapping.',
+    date: '22 Sep 2026 • Training Directorate'
+  }
+]
 
 export default function LandingPage() {
-  return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 font-sans selection:bg-indigo-500/30 overflow-hidden">
-      
-      {/* BACKGROUND EFFECTS */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-600/20 blur-[120px] rounded-full mix-blend-screen"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-emerald-600/20 blur-[120px] rounded-full mix-blend-screen"></div>
-        <div className="absolute top-[40%] left-[50%] translate-x-[-50%] w-[60%] h-[20%] bg-purple-600/10 blur-[100px] rounded-full mix-blend-screen"></div>
-      </div>
+  const router = useRouter()
+  const [broadcasts, setBroadcasts] = useState(DEFAULT_BROADCASTS)
+  const [filterType, setFilterType] = useState('ALL')
 
-      {/* NAVBAR */}
-      <nav className="fixed top-0 w-full border-b border-slate-800/50 bg-slate-950/80 backdrop-blur-md z-50">
+  useEffect(() => {
+    const saved = localStorage.getItem('cc_homepage_broadcasts')
+    if (saved) {
+      try { setBroadcasts(JSON.parse(saved)) } catch (e) {}
+    }
+  }, [])
+
+  function openPortalAs(role: 'TRAINEE' | 'TRAINER' | 'ADMIN') {
+    localStorage.setItem('cc_active_role', role)
+    router.push('/dashboard')
+  }
+
+  const visibleBroadcasts = filterType === 'ALL'
+    ? broadcasts
+    : broadcasts.filter(b => b.type === filterType)
+
+  return (
+    <div className="min-h-screen bg-[#f4f6f9] text-slate-800 font-sans">
+      <div className="h-1.5 bg-[#d97706] w-full" />
+
+      {/* INSTITUTIONAL TOP NAVBAR */}
+      <nav className="bg-[#0b2545] text-white border-b border-slate-700">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center shadow-[0_0_15px_rgb(99,102,241,0.5)]">
-              <Sparkles className="w-5 h-5 text-white" />
+          <div className="flex items-center gap-3.5">
+            <div className="w-11 h-11 bg-[#d97706] rounded flex items-center justify-center font-bold text-base text-white">
+              IMD
             </div>
-            <span className="text-xl font-black text-white tracking-tight">BEYOND ZERO</span>
+            <div>
+              <span className="text-lg font-bold tracking-tight text-white block leading-none">
+                CAPACITY CONNECT
+              </span>
+              <span className="text-xs text-sky-200 block mt-1">
+                Ministry of Earth Sciences (MoES) • India Meteorological Department (SIH26075)
+              </span>
+            </div>
           </div>
-          <div className="hidden md:flex items-center gap-8 text-sm font-bold text-slate-400">
-            <Link href="#features" className="hover:text-white transition-colors">Features</Link>
-            <Link href="/auth/register" className="hover:text-white transition-colors">Academy</Link>
-            {/* 🚨 POINTS TO NEW EMPLOYER PAGE */}
-            <Link href="/auth/register-employer" className="hover:text-white transition-colors">For Employers</Link>
-          </div>
-          <div className="flex items-center gap-4">
-            <Link href="/auth/login" className="text-sm font-bold text-slate-300 hover:text-white transition-colors">
-              Sign In
+
+          <div className="flex items-center gap-3">
+            <Link
+              href="/auth/login"
+              className="text-xs font-semibold text-slate-200 hover:text-white px-3.5 py-2 rounded border border-slate-600"
+            >
+              Officer Sign In
             </Link>
-            <Link href="/auth/register" className="bg-white text-slate-950 hover:bg-slate-200 px-5 py-2.5 rounded-xl text-sm font-black transition-all shadow-[0_0_15px_rgb(255,255,255,0.2)]">
-              Get Started
+            <Link
+              href="/auth/register"
+              className="bg-[#d97706] hover:bg-[#b45309] text-white px-4 py-2 rounded text-xs font-semibold transition-colors"
+            >
+              New Registration
             </Link>
           </div>
         </div>
       </nav>
 
-      {/* HERO SECTION */}
-      <main className="pt-40 pb-20 px-6 max-w-7xl mx-auto text-center relative z-10">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="inline-flex items-center gap-2 bg-slate-900 border border-slate-800 px-4 py-2 rounded-full text-xs font-bold text-indigo-400 uppercase tracking-widest mb-8">
-            <Zap className="w-3.5 h-3.5" /> The Next Generation of Engineering
-          </div>
-          
-          <h1 className="text-5xl md:text-7xl font-black text-white tracking-tight mb-8 leading-[1.1]">
-            Build the future. <br className="hidden md:block" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-emerald-400">
-              Get hired on the spot.
-            </span>
-          </h1>
-          
-          <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-12 font-medium leading-relaxed">
-            Beyond Zero is a unified ecosystem where elite developers master new skills in the cloud, deploy real bounties, and get discovered by top tech companies.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/auth/register" className="w-full sm:w-auto bg-indigo-500 hover:bg-indigo-600 text-white px-8 py-4 rounded-xl text-sm font-black uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-[0_4px_0_rgb(67,56,202)] hover:translate-y-[2px] hover:shadow-[0_2px_0_rgb(67,56,202)] active:translate-y-[4px] active:shadow-none">
-              Join as Developer <Code2 className="w-4 h-4" />
-            </Link>
-            {/* 🚨 POINTS TO NEW EMPLOYER PAGE */}
-            <Link href="/auth/register-employer" className="w-full sm:w-auto bg-slate-800 hover:bg-slate-700 text-white px-8 py-4 rounded-xl text-sm font-black uppercase tracking-wider transition-all flex items-center justify-center gap-2 border border-slate-700">
-              Hire Top Talent <Briefcase className="w-4 h-4" />
-            </Link>
-          </div>
-        </motion.div>
-
-        {/* HERO UI PREVIEW */}
-        <motion.div 
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="mt-20 relative mx-auto max-w-5xl"
-        >
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-2 shadow-2xl backdrop-blur-xl">
-            <div className="rounded-xl overflow-hidden border border-slate-800 bg-slate-950 flex flex-col">
-              <div className="h-10 bg-slate-900 border-b border-slate-800 flex items-center px-4 gap-2">
-                <div className="w-3 h-3 rounded-full bg-rose-500/50"></div>
-                <div className="w-3 h-3 rounded-full bg-amber-500/50"></div>
-                <div className="w-3 h-3 rounded-full bg-emerald-500/50"></div>
-              </div>
-              <div className="p-8 text-left font-mono text-sm sm:text-base text-slate-300">
-                <p><span className="text-pink-500">const</span> <span className="text-blue-400">developer</span> = <span className="text-pink-500">await</span> BeyondZero.<span className="text-emerald-400">train</span>();</p>
-                <p className="mt-2"><span className="text-pink-500">if</span> (developer.<span className="text-blue-400">skills</span> === <span className="text-amber-300">'Elite'</span>) {'{'}</p>
-                <p className="ml-4 mt-2">company.<span className="text-emerald-400">hire</span>(developer);</p>
-                <p className="ml-4 mt-2">console.<span className="text-emerald-400">log</span>(<span className="text-amber-300">"Deploying to production..."</span>);</p>
-                <p className="mt-2">{'}'}</p>
-              </div>
+      {/* CLEAN INSTITUTIONAL HERO BANNER */}
+      <section className="bg-white border-b border-slate-200 py-12 px-6">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <div className="lg:col-span-7 space-y-4">
+            <div className="inline-block bg-[#e8f0f8] text-[#0b2545] border border-[#cbd5e1] px-3 py-1 rounded text-xs font-bold uppercase tracking-wider">
+              Digital Capacity Building & Learning Management Portal
             </div>
-          </div>
-        </motion.div>
-      </main>
-
-      {/* FEATURES GRID */}
-      <section id="features" className="py-24 bg-slate-950 border-t border-slate-800/50 relative z-10">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-4">Everything you need to scale.</h2>
-            <p className="text-slate-400 font-medium max-w-2xl mx-auto">Stop jumping between tutorials and job boards. Beyond Zero brings learning, coding, and recruitment into one unified platform.</p>
+            <h1 className="text-3xl md:text-4xl font-bold text-[#0b2545] leading-tight">
+              Centralized Meteorological Training, Assessment & Competency Management
+            </h1>
+            <p className="text-sm text-slate-600 leading-relaxed max-w-2xl">
+              Supporting Regional Meteorological Centres (RMCs) and state observatories across India with structured coursework, a centralized Trainer Library, timed MCQ evaluations, and algorithmic Subject Matter Expert (SME) competency mapping.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Link href="/auth/register" className="block bg-slate-900 border border-slate-800 p-8 rounded-3xl hover:border-indigo-500/50 transition-colors group cursor-pointer">
-              <div className="w-12 h-12 bg-indigo-500/20 text-indigo-400 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <Terminal className="w-6 h-6" />
+          {/* 3 ROLE ACCESS CARDS */}
+          <div className="lg:col-span-5 grid grid-cols-1 gap-3">
+            <button
+              onClick={() => openPortalAs('TRAINEE')}
+              className="bg-[#f8fafc] hover:bg-[#e8f0f8] border border-slate-300 p-4 rounded-lg text-left transition-colors flex items-center justify-between group"
+            >
+              <div>
+                <div className="text-xs font-bold text-[#0d9488] uppercase">Role 1 • Trainee Portal</div>
+                <div className="text-sm font-bold text-[#0b2545] mt-0.5">Officer Profile, Coursework & Timed MCQs</div>
+                <p className="text-xs text-slate-600 mt-0.5">Enroll in modules, view lectures, take tests & submit feedback.</p>
               </div>
-              <h3 className="text-xl font-black text-white mb-3 group-hover:text-indigo-400 transition-colors">Cloud Code Studio</h3>
-              <p className="text-slate-400 text-sm leading-relaxed">Write, compile, and execute code directly in your browser. No local setup required. Backed by enterprise-grade infrastructure.</p>
-            </Link>
+              <ArrowRight className="w-4 h-4 text-[#0b2545] group-hover:translate-x-1 transition-transform shrink-0" />
+            </button>
 
-            <Link href="/auth/register" className="block bg-slate-900 border border-slate-800 p-8 rounded-3xl hover:border-emerald-500/50 transition-colors group cursor-pointer">
-              <div className="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <ShieldCheck className="w-6 h-6" />
+            <button
+              onClick={() => openPortalAs('TRAINER')}
+              className="bg-[#f8fafc] hover:bg-[#e8f0f8] border border-slate-300 p-4 rounded-lg text-left transition-colors flex items-center justify-between group"
+            >
+              <div>
+                <div className="text-xs font-bold text-[#d97706] uppercase">Role 2 • Trainer Studio</div>
+                <div className="text-sm font-bold text-[#0b2545] mt-0.5">Trainer Library, Questionnaires & Deadlines</div>
+                <p className="text-xs text-slate-600 mt-0.5">Upload lectures/slides/PDFs, set MCQ deadlines & track scores.</p>
               </div>
-              <h3 className="text-xl font-black text-white mb-3 group-hover:text-emerald-400 transition-colors">Verified Bounties</h3>
-              <p className="text-slate-400 text-sm leading-relaxed">Complete real-world tasks and open-source bounties to earn Gems, XP, and verified credentials that employers actually trust.</p>
-            </Link>
+              <ArrowRight className="w-4 h-4 text-[#0b2545] group-hover:translate-x-1 transition-transform shrink-0" />
+            </button>
 
-            {/* 🚨 POINTS TO NEW EMPLOYER PAGE */}
-            <Link href="/auth/register-employer" className="block bg-slate-900 border border-slate-800 p-8 rounded-3xl hover:border-amber-500/50 transition-colors group cursor-pointer">
-              <div className="w-12 h-12 bg-amber-500/20 text-amber-400 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <Users className="w-6 h-6" />
+            <button
+              onClick={() => openPortalAs('ADMIN')}
+              className="bg-[#f8fafc] hover:bg-[#e8f0f8] border border-slate-300 p-4 rounded-lg text-left transition-colors flex items-center justify-between group"
+            >
+              <div>
+                <div className="text-xs font-bold text-[#0b2545] uppercase">Role 3 • Admin Command Center</div>
+                <div className="text-sm font-bold text-[#0b2545] mt-0.5">RBAC Approval, KPI Dashboards & Competency Mapping</div>
+                <p className="text-xs text-slate-600 mt-0.5">Approve users, rank suitable trainers & publish homepage notices.</p>
               </div>
-              <h3 className="text-xl font-black text-white mb-3 group-hover:text-amber-400 transition-colors">Direct Recruitment</h3>
-              <p className="text-slate-400 text-sm leading-relaxed">Employers can search the talent pool based on actual code performance and completed projects, not just padded resumes.</p>
-            </Link>
+              <ArrowRight className="w-4 h-4 text-[#0b2545] group-hover:translate-x-1 transition-transform shrink-0" />
+            </button>
           </div>
         </div>
       </section>
 
-      {/* FOOTER CTA */}
-      <footer className="border-t border-slate-800/50 bg-slate-900/50 pt-20 pb-10 relative z-10 text-center">
-        <h2 className="text-3xl font-black text-white mb-6">Ready to enter the ecosystem?</h2>
-        <Link href="/auth/register" className="inline-block bg-white text-slate-950 hover:bg-slate-200 px-8 py-4 rounded-xl text-sm font-black uppercase tracking-wider transition-all shadow-[0_0_20px_rgb(255,255,255,0.2)] hover:scale-105">
-          Launch Beyond Zero
-        </Link>
-        <p className="text-slate-600 text-xs mt-12 font-bold uppercase tracking-widest">© 2026 Beyond Zero. All rights reserved.</p>
-      </footer>
+      {/* HOMEPAGE NOTIFICATIONS, ANNOUNCEMENTS, ACHIEVEMENTS & NEW CONTENT */}
+      <main className="max-w-7xl mx-auto py-10 px-6">
+        <div className="bg-white border border-slate-200 rounded-lg p-6 shadow-xs">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-slate-200">
+            <div>
+              <span className="text-xs font-bold text-[#0d9488] uppercase tracking-wider">
+                Official Directorate Bulletin
+              </span>
+              <h2 className="text-xl font-bold text-[#0b2545] mt-0.5">
+                Notifications, Announcements, Achievements & Newly Added Learning Content
+              </h2>
+            </div>
+
+            <div className="flex flex-wrap gap-1.5">
+              {['ALL', 'ANNOUNCEMENT', 'ACHIEVEMENT', 'NEW_CONTENT', 'NOTIFICATION'].map(t => (
+                <button
+                  key={t}
+                  onClick={() => setFilterType(t)}
+                  className={`px-3 py-1.5 rounded text-xs font-semibold transition-colors ${
+                    filterType === t
+                      ? 'bg-[#0b2545] text-white'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  {t.replace('_', ' ')}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
+            {visibleBroadcasts.map((item) => (
+              <div
+                key={item.id}
+                className="bg-[#f8fafc] border border-slate-200 rounded-lg p-5 flex flex-col justify-between hover:border-slate-300 transition-colors"
+              >
+                <div>
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <span className="text-[11px] font-bold uppercase px-2.5 py-0.5 rounded bg-[#e8f0f8] text-[#0b2545] border border-slate-300">
+                      {item.badge}
+                    </span>
+                    <span className="text-xs text-slate-500">{item.date}</span>
+                  </div>
+                  <h3 className="text-base font-bold text-[#0b2545] mb-1.5">{item.title}</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">{item.desc}</p>
+                </div>
+
+                <div className="mt-4 pt-3 border-t border-slate-200 flex justify-between items-center text-xs">
+                  <span className="text-[#0d9488] font-semibold flex items-center gap-1">
+                    <ShieldCheck className="w-3.5 h-3.5" /> Verified by IMD Training Directorate
+                  </span>
+                  <button
+                    onClick={() => openPortalAs('TRAINEE')}
+                    className="font-bold text-[#0b2545] hover:underline"
+                  >
+                    View Module →
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </main>
     </div>
   )
 }

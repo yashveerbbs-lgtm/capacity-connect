@@ -1,296 +1,243 @@
 'use client'
 import { useState } from 'react'
-import { Search, Briefcase, Trophy, Award, ShieldCheck, ChevronRight, Star, ExternalLink, Mail, Code2, X, CheckCircle2, Terminal, Sparkles, Gem } from 'lucide-react'
+import { ShieldCheck, X } from 'lucide-react'
 
-export default function EmployerDashboard() {
+const IMD_TRAINERS = [
+  {
+    id: 'IMD-SME-101',
+    name: 'Dr. M. Mohapatra',
+    rank: 'Director General / Chief SME',
+    xp: 28,
+    track: 'Doppler Radar & Cyclone Warning',
+    score: '99.5%',
+    libraryUploads: '18 Lectures & SOPs',
+    skills: ['Doppler Radar & Nowcasting', 'Cyclone Warning SOP', 'Synoptic Meteorology', 'WMO BIP-M'],
+    bio: 'Director General of Meteorology (IMD). Lead Subject Matter Expert in Tropical Cyclone forecasting, S-Band Doppler Weather Radar operations, and impact-based early warning systems.',
+    certificates: ['WMO Permanent Representative Fellow', 'MoES National Award in Atmospheric Sciences']
+  },
+  {
+    id: 'IMD-SME-102',
+    name: 'Dr. Sunitha Devi',
+    rank: 'Scientist-F • WMO Trainer',
+    xp: 19,
+    track: 'Cyclone Warning & Satellite Met',
+    score: '98.0%',
+    libraryUploads: '12 Lectures & Manuals',
+    skills: ['Cyclone Warning & Disaster Management', 'INSAT-3DS Satellite Dvorak', 'Common Alerting Protocol (CAP)'],
+    bio: 'Head of Cyclone Warning Division at IMD HQ. Specializes in INSAT-3DS satellite radiance interpretation, storm surge inundation modeling, and WMO severe weather advisories.',
+    certificates: ['WMO BIP-MT Certified Instructor', 'ESCAP/WMO Tropical Cyclone Panel Lead']
+  },
+  {
+    id: 'IMD-SME-103',
+    name: 'Dr. R. K. Jenamani',
+    rank: 'Scientist-G • Senior Faculty',
+    xp: 24,
+    track: 'Numerical Weather Prediction & Aviation',
+    score: '95.4%',
+    libraryUploads: '15 Lectures & PPTs',
+    skills: ['Numerical Weather Prediction (NWP)', 'Aviation Meteorology', 'CAT-III Fog Nowcasting', '4D-Var Assimilation'],
+    bio: 'Senior Scientist-G leading Aviation Meteorology at IGIA New Delhi and mesoscale Numerical Weather Prediction (NWP) training across regional IMD centres.',
+    certificates: ['ICAO Aeronautical Meteorology Lead Auditor', 'IIT Delhi Ph.D. Atmospheric Modeling']
+  },
+  {
+    id: 'IMD-SME-104',
+    name: 'Dr. Vikram Rathore',
+    rank: 'Scientist-E • IITM Faculty',
+    xp: 14,
+    track: 'Mesoscale NWP & Radar Telemetry',
+    score: '92.0%',
+    libraryUploads: '10 Lectures & Labs',
+    skills: ['Numerical Weather Prediction (NWP)', 'Doppler Radar & Nowcasting', 'Python Geospatial Analytics', 'AWS Telemetry'],
+    bio: 'Senior faculty at IITM Pune specializing in high-resolution ensemble weather forecasting and automated weather station (AWS) network calibration.',
+    certificates: ['Mission Mausam Mesoscale Modeling Lead', 'WMO Data Assimilation Fellowship']
+  }
+]
+
+export default function CompetencyMappingPage() {
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectedRank, setSelectedRank] = useState('All Ranks')
-  const [activeCandidate, setActiveCandidate] = useState<any>(null) // Modal state
+  const [selectedSubject, setSelectedSubject] = useState('All Subjects')
+  const [activeTrainer, setActiveTrainer] = useState<any>(null)
+  const [assignedBanner, setAssignedBanner] = useState('')
 
-  const candidates = [
-    { 
-      id: 'APX-801', 
-      name: 'Yashveer Saini', 
-      rank: 'Apex', 
-      xp: 1250, 
-      track: 'Full-Stack Next.js', 
-      score: '99%', 
-      completedBounties: 8, 
-      skills: ['Next.js', 'TypeScript', 'Supabase', 'Python'], 
-      status: 'Available',
-      bio: 'Lead Architect and Core Contributor at Apex Studio. Specialized in scalable real-time architectures and high-performance React applications.',
-      certificates: ['Sports Data & Predictive AI', 'Advanced Enterprise Cloud Architecture'],
-      bountiesList: ['Migrate Landing Page to Next.js 14 App Router', 'Build Supabase Webhook for Stripe Payments']
-    },
-    { 
-      id: 'APX-802', 
-      name: 'Sarah Jenkins', 
-      rank: 'Elite', 
-      xp: 850, 
-      track: 'Full-Stack Engineering', 
-      score: '98%', 
-      completedBounties: 5, 
-      skills: ['React', 'Node.js', 'PostgreSQL'], 
-      status: 'Interviewing',
-      bio: 'Full-stack builder with a heavy focus on backend reliability and clean SQL query optimization.',
-      certificates: ['Full-Stack Core Engineering'],
-      bountiesList: ['Optimize Database Query Latency', 'REST API Authentication Refactor']
-    },
-    { 
-      id: 'APX-803', 
-      name: 'Rahul_Dev', 
-      rank: 'Pro', 
-      xp: 450, 
-      track: 'Python Algorithmic Trading', 
-      score: '100%', 
-      completedBounties: 3, 
-      skills: ['Python', 'Pandas', 'TensorFlow'], 
-      status: 'Available',
-      bio: 'Quantitative developer building automated trading algorithms and machine learning models for market analysis.',
-      certificates: ['Python Algorithmic Systems'],
-      bountiesList: ['Fix Memory Leak in Python Trading Algorithm']
-    },
-    { 
-      id: 'APX-804', 
-      name: 'Priya_C++', 
-      rank: 'Pro', 
-      xp: 410, 
-      track: '3D Game Engine Mechanics', 
-      score: '94%', 
-      completedBounties: 2, 
-      skills: ['C++', 'Unreal Engine 5', 'DirectX'], 
-      status: 'Available',
-      bio: 'Game engine engineer focused on optimizing shader pipelines and physics calculation loops in C++ and Unreal Engine.',
-      certificates: ['3D Graphics & C++ Fundamentals'],
-      bountiesList: ['Optimize 3D Mecha Texture Resolution for Mobile']
-    },
-  ]
-
-  const filteredCandidates = candidates.filter(c => {
-    const matchesRank = selectedRank === 'All Ranks' ? true : c.rank === selectedRank
-    const matchesSearch = c.name.toLowerCase().includes(searchQuery.toLowerCase()) || c.skills.join(' ').toLowerCase().includes(searchQuery.toLowerCase())
-    return matchesRank && matchesSearch
+  const filteredTrainers = IMD_TRAINERS.filter(t => {
+    const matchesSubject = selectedSubject === 'All Subjects'
+      ? true
+      : t.skills.join(' ').toLowerCase().includes(selectedSubject.toLowerCase()) || t.track.toLowerCase().includes(selectedSubject.toLowerCase())
+    const matchesSearch = t.name.toLowerCase().includes(searchQuery.toLowerCase()) || t.skills.join(' ').toLowerCase().includes(searchQuery.toLowerCase())
+    return matchesSubject && matchesSearch
   })
 
   return (
-    <div className="h-full bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 p-8 md:p-12 overflow-y-auto font-sans transition-colors relative">
-      
-      {/* 🚨 DEEP-DIVE CANDIDATE PROFILE MODAL 🚨 */}
-      {activeCandidate && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
-          <div className="bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 rounded-[2rem] max-w-2xl w-full p-8 shadow-[0_20px_50px_rgb(0,0,0,0.15)] overflow-y-auto max-h-[90vh] animate-in zoom-in-95 relative overflow-hidden">
-            
-            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-indigo-500 to-purple-500"></div>
-
-            {/* Modal Header */}
-            <div className="flex justify-between items-start mb-6 border-b-2 border-slate-100 dark:border-slate-800 pb-6">
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 border-2 border-indigo-100 dark:border-indigo-800 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-black text-2xl shadow-sm">
-                  {activeCandidate.name.charAt(0)}
-                </div>
-                <div>
-                  <h2 className="text-2xl font-black text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                    {activeCandidate.name} <ShieldCheck className="w-5 h-5 text-emerald-500" />
-                  </h2>
-                  <p className="text-xs text-slate-400 font-bold uppercase tracking-wider mt-0.5">
-                    {activeCandidate.id} • Track: {activeCandidate.track}
-                  </p>
-                </div>
+    <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-6 text-slate-800">
+      {/* MODAL */}
+      {activeTrainer && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4">
+          <div className="bg-white border border-slate-300 rounded-lg max-w-2xl w-full p-6 shadow-xl space-y-5">
+            <div className="flex justify-between items-start border-b border-slate-200 pb-4">
+              <div>
+                <span className="text-xs font-bold text-[#0d9488] uppercase">{activeTrainer.id} • Verified Faculty</span>
+                <h2 className="text-xl font-bold text-[#0b2545] flex items-center gap-2 mt-0.5">
+                  {activeTrainer.name} <ShieldCheck className="w-5 h-5 text-[#0d9488]" />
+                </h2>
+                <p className="text-xs text-slate-500 font-medium">{activeTrainer.rank} • {activeTrainer.track}</p>
               </div>
-              <button 
-                onClick={() => setActiveCandidate(null)}
-                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 bg-slate-50 dark:bg-slate-800 p-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 transition-all"
-              >
-                <X className="w-5 h-5" />
+              <button onClick={() => setActiveTrainer(null)} className="bg-slate-100 text-slate-700 p-1.5 rounded">
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            {/* Modal Body */}
-            <div className="space-y-6">
-              
-              {/* Bio */}
-              <div>
-                <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Developer Bio</h4>
-                <p className="text-sm text-slate-600 dark:text-slate-300 font-medium leading-relaxed bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border-2 border-slate-100 dark:border-slate-800">
-                  {activeCandidate.bio}
-                </p>
+            <div className="space-y-4 text-xs">
+              <div className="bg-[#f8fafc] border border-slate-200 p-4 rounded text-slate-700 leading-relaxed">
+                {activeTrainer.bio}
               </div>
 
-              {/* Stats Grid */}
-              <div className="grid grid-cols-3 gap-4">
-                <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border-2 border-slate-100 dark:border-slate-800 text-center">
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Rank Tier</p>
-                  <p className="text-lg font-black text-amber-500 mt-1">{activeCandidate.rank}</p>
+              <div className="grid grid-cols-3 gap-4 text-center">
+                <div className="bg-[#f8fafc] border border-slate-200 p-3 rounded">
+                  <div className="text-slate-500 font-bold uppercase text-[10px]">Suitability Match</div>
+                  <div className="text-lg font-bold text-[#0d9488] mt-0.5">{activeTrainer.score}</div>
                 </div>
-                <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border-2 border-slate-100 dark:border-slate-800 text-center">
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Exam Accuracy</p>
-                  <p className="text-lg font-black text-emerald-500 mt-1">{activeCandidate.score}</p>
+                <div className="bg-[#f8fafc] border border-slate-200 p-3 rounded">
+                  <div className="text-slate-500 font-bold uppercase text-[10px]">Experience</div>
+                  <div className="text-lg font-bold text-[#0b2545] mt-0.5">{activeTrainer.xp} Years</div>
                 </div>
-                <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border-2 border-slate-100 dark:border-slate-800 text-center">
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Total XP</p>
-                  <p className="text-lg font-black text-indigo-500 mt-1">{activeCandidate.xp} XP</p>
+                <div className="bg-[#f8fafc] border border-slate-200 p-3 rounded">
+                  <div className="text-slate-500 font-bold uppercase text-[10px]">Trainer Library</div>
+                  <div className="text-sm font-bold text-[#0b2545] mt-1">{activeTrainer.libraryUploads}</div>
                 </div>
               </div>
 
-              {/* Verified Certificates */}
               <div>
-                <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-1.5">
-                  <Award className="w-4 h-4 text-amber-500" /> Verified Academy Credentials
-                </h4>
-                <div className="space-y-2">
-                  {activeCandidate.certificates.map((cert: string, idx: number) => (
-                    <div key={idx} className="flex items-center justify-between bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 p-3.5 rounded-xl shadow-sm">
-                      <span className="text-xs font-extrabold text-slate-700 dark:text-slate-200">{cert}</span>
-                      <span className="text-[10px] font-black text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 px-2.5 py-1 rounded-md border border-emerald-200 dark:border-emerald-800">Verified Blockchain Credential</span>
+                <div className="text-slate-500 font-bold uppercase mb-2">Verified Credentials</div>
+                <div className="space-y-1.5">
+                  {activeTrainer.certificates.map((c: string) => (
+                    <div key={c} className="bg-[#f8fafc] border border-slate-200 px-3.5 py-2 rounded flex justify-between items-center">
+                      <span className="font-semibold text-[#0b2545]">{c}</span>
+                      <span className="text-[#0d9488] font-bold text-[11px]">MoES Verified</span>
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* Completed Bounties */}
-              <div>
-                <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-indigo-500" /> Successfully Deployed Bounties
-                </h4>
-                <div className="space-y-2">
-                  {activeCandidate.bountiesList.map((bounty: string, idx: number) => (
-                    <div key={idx} className="flex items-center justify-between bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 p-3.5 rounded-xl shadow-sm">
-                      <span className="text-xs font-bold text-slate-600 dark:text-slate-300">{bounty}</span>
-                      <span className="text-[10px] font-bold text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 px-2.5 py-1 rounded-md">Production Ready</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Action Button */}
-              <button 
+              <button
                 onClick={() => {
-                  alert(`Official interview request sent to ${activeCandidate.name}!`)
-                  setActiveCandidate(null)
+                  setAssignedBanner(`Assigned ${activeTrainer.name} (${activeTrainer.score} Suitability Match) as Lead Subject Trainer.`)
+                  setActiveTrainer(null)
                 }}
-                className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-4 rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-[0_4px_0_rgb(67,56,202)] hover:shadow-[0_2px_0_rgb(67,56,202)] hover:translate-y-[2px] active:translate-y-[4px] active:shadow-none mt-4"
+                className="w-full bg-[#0b2545] hover:bg-[#163a63] text-white py-2.5 rounded text-xs font-bold uppercase tracking-wider"
               >
-                Dispatch Formal Interview Invitation <Mail className="w-4 h-4" />
+                Assign Trainer to Subject Cohort
               </button>
-
             </div>
           </div>
         </div>
       )}
 
       {/* HEADER */}
-      <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b-2 border-slate-100 dark:border-slate-800 pb-8">
+      <div className="bg-white border border-slate-200 rounded-lg p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-3 py-1 rounded-lg border-2 border-amber-200 dark:border-amber-700/50 font-black text-xs uppercase tracking-widest mb-3 shadow-sm">
-            <Briefcase className="w-4 h-4" /> Recruiter Clearance Granted
-          </div>
-          <h1 className="text-3xl md:text-4xl font-black text-slate-800 dark:text-slate-100 tracking-tight mb-2">
-            Verified Talent Pipeline
+          <span className="text-xs font-bold text-[#0d9488] uppercase tracking-wider">
+            Trainer Competency Mapping Matrix (SIH26075)
+          </span>
+          <h1 className="text-2xl font-bold text-[#0b2545] mt-0.5">
+            Identify Suitable Trainers for Specialized Meteorological Subjects
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">
-            Discover top-tier engineers based on real code performance, completed bounties, and verified rank scores. Click any candidate for deep-dive telemetry.
+          <p className="text-xs text-slate-600 mt-0.5">
+            Algorithmic suitability ranking based on domain qualifications (45%), trainee feedback ratings (30%), and Trainer Library contributions (25%).
           </p>
         </div>
 
-        <div className="flex gap-4 bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 p-4 rounded-2xl shadow-sm">
+        <div className="bg-[#f8fafc] border border-slate-200 px-5 py-3 rounded flex items-center gap-5 shrink-0">
           <div>
-            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Available Candidates</p>
-            <p className="text-2xl font-black text-slate-800 dark:text-slate-100">{candidates.length}</p>
+            <div className="text-[10px] font-bold text-slate-500 uppercase">Verified SMEs</div>
+            <div className="text-xl font-bold text-[#0b2545]">{IMD_TRAINERS.length}</div>
           </div>
-          <div className="border-l-2 border-slate-100 dark:border-slate-800 pl-4">
-            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Avg Exam Score</p>
-            <p className="text-2xl font-black text-emerald-500">97.7%</p>
+          <div className="border-l border-slate-300 pl-5">
+            <div className="text-[10px] font-bold text-slate-500 uppercase">Mean Match</div>
+            <div className="text-xl font-bold text-[#0d9488]">96.2%</div>
           </div>
         </div>
       </div>
 
-      {/* SEARCH AND FILTERS */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-        <div className="flex gap-2 bg-slate-100 dark:bg-slate-900 p-1.5 rounded-2xl border-2 border-slate-200 dark:border-slate-800">
-          {['All Ranks', 'Apex', 'Elite', 'Pro'].map(rank => (
+      {assignedBanner && (
+        <div className="bg-emerald-50 border border-emerald-300 text-emerald-900 p-3.5 rounded text-xs font-semibold">
+          {assignedBanner}
+        </div>
+      )}
+
+      {/* FILTER BAR */}
+      <div className="flex flex-col md:flex-row justify-between gap-3">
+        <div className="flex flex-wrap gap-1.5">
+          {['All Subjects', 'Doppler Radar', 'Numerical Weather Prediction', 'Cyclone Warning', 'Aviation'].map(sub => (
             <button
-              key={rank}
-              onClick={() => setSelectedRank(rank)}
-              className={`px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-xl transition-all ${
-                selectedRank === rank 
-                  ? 'bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-sm border-2 border-slate-200 dark:border-slate-700' 
-                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+              key={sub}
+              onClick={() => setSelectedSubject(sub)}
+              className={`px-3.5 py-2 rounded text-xs font-semibold transition-colors ${
+                selectedSubject === sub
+                  ? 'bg-[#0b2545] text-white'
+                  : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-50'
               }`}
             >
-              {rank}
+              {sub}
             </button>
           ))}
         </div>
 
-        <div className="relative w-full md:w-80">
-          <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            placeholder="Search candidates or skills..."
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            className="w-full bg-white dark:bg-slate-900 text-sm font-bold text-slate-700 dark:text-slate-200 border-2 border-slate-200 dark:border-slate-800 rounded-xl pl-11 pr-4 py-3 focus:outline-none focus:border-indigo-500 transition-colors shadow-sm"
-          />
-        </div>
+        <input
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+          placeholder="Search faculty name or skill..."
+          className="bg-white border border-slate-300 rounded px-3.5 py-2 text-xs text-slate-800 font-medium min-w-[240px]"
+        />
       </div>
 
-      {/* CANDIDATES GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {filteredCandidates.map(c => (
-          <div key={c.id} className="bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 rounded-3xl p-6 shadow-sm hover:border-indigo-200 dark:hover:border-indigo-700 transition-all flex flex-col justify-between">
-            <div>
-              <div className="flex justify-between items-start mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 border-2 border-indigo-100 dark:border-indigo-800 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-black text-xl">
-                    {c.name.charAt(0)}
-                  </div>
-                  <div>
-                    <h3 className="font-extrabold text-slate-800 dark:text-slate-100 text-lg flex items-center gap-2">
-                      {c.name} <ShieldCheck className="w-4 h-4 text-emerald-500" />
-                    </h3>
-                    <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">{c.id} • {c.track}</p>
-                  </div>
-                </div>
-
-                <span className={`text-xs font-black uppercase px-3 py-1 rounded-lg border-2 ${
-                  c.rank === 'Apex' ? 'bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-700/50' : 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-700/50'
-                }`}>
-                  {c.rank} ({c.xp} XP)
-                </span>
+      {/* TRAINER CARDS */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {filteredTrainers.map(t => (
+          <div key={t.id} className="bg-white border border-slate-200 rounded-lg p-5 space-y-4">
+            <div className="flex items-start justify-between">
+              <div>
+                <span className="text-[11px] font-bold text-[#0d9488] uppercase">{t.id}</span>
+                <h3 className="text-base font-bold text-[#0b2545] flex items-center gap-1.5 mt-0.5">
+                  {t.name} <ShieldCheck className="w-4 h-4 text-[#0d9488]" />
+                </h3>
+                <p className="text-xs text-slate-500">{t.rank} • {t.track}</p>
               </div>
+              <span className="px-2.5 py-1 rounded bg-[#e8f0f8] border border-slate-300 text-[#0b2545] text-xs font-bold">
+                Match: {t.score}
+              </span>
+            </div>
 
-              <div className="grid grid-cols-2 gap-3 my-4 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border-2 border-slate-100 dark:border-slate-800">
-                <div>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Exam Accuracy</p>
-                  <p className="text-lg font-black text-slate-800 dark:text-slate-100">{c.score}</p>
-                </div>
-                <div>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Bounties Deployed</p>
-                  <p className="text-lg font-black text-indigo-600 dark:text-indigo-400">{c.completedBounties} Bounties</p>
-                </div>
+            <div className="grid grid-cols-2 gap-3 bg-[#f8fafc] border border-slate-200 p-3 rounded text-xs">
+              <div>
+                <span className="text-[10px] font-bold text-slate-500 uppercase block">Domain Experience</span>
+                <strong className="text-sm text-[#0b2545]">{t.xp} Years</strong>
               </div>
-
-              <div className="flex flex-wrap gap-2 mb-6">
-                {c.skills.map(s => (
-                  <span key={s} className="text-[10px] font-bold text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 px-2.5 py-1 rounded-lg uppercase tracking-wider">
-                    {s}
-                  </span>
-                ))}
+              <div>
+                <span className="text-[10px] font-bold text-slate-500 uppercase block">Library Contributions</span>
+                <strong className="text-sm text-[#0d9488]">{t.libraryUploads}</strong>
               </div>
             </div>
 
-            <div className="flex gap-3">
-              <button 
-                onClick={() => setActiveCandidate(c)}
-                className="flex-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold py-3.5 rounded-xl text-xs uppercase tracking-wider transition-all border-2 border-slate-200 dark:border-slate-700 shadow-sm"
+            <div className="flex flex-wrap gap-1.5">
+              {t.skills.map(s => (
+                <span key={s} className="px-2.5 py-0.5 rounded bg-slate-100 border border-slate-200 text-xs font-medium text-slate-700">
+                  {s}
+                </span>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 pt-2 border-t border-slate-200">
+              <button
+                onClick={() => setActiveTrainer(t)}
+                className="bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 py-2 rounded text-xs font-bold"
               >
-                Deep-Dive Profile
+                View Faculty Dossier
               </button>
-              <button 
-                onClick={() => alert(`Interview request initiated for ${c.name}!`)}
-                className="flex-1 bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3.5 rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-[0_4px_0_rgb(67,56,202)] hover:shadow-[0_2px_0_rgb(67,56,202)] hover:translate-y-[2px] active:translate-y-[4px] active:shadow-none"
+              <button
+                onClick={() => setAssignedBanner(`Assigned ${t.name} (${t.score} Suitability Match) to lead ${t.track}.`)}
+                className="bg-[#0b2545] hover:bg-[#163a63] text-white py-2 rounded text-xs font-bold"
               >
-                Request Interview <Mail className="w-4 h-4" />
+                Assign Trainer
               </button>
             </div>
           </div>
